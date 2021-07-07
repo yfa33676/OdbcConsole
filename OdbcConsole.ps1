@@ -1,43 +1,47 @@
 #-------------------------------------------------------------------
-# ä½¿ã„æ–¹
+# g‚¢•û
 #-------------------------------------------------------------------
 #
-# 0. ç’°å¢ƒè¨­å®š
-  $DSN = "" # ãƒ‡ãƒ¼ã‚¿ã‚½ãƒ¼ã‚¹å
-  $UID = "" # ãƒ¦ãƒ¼ã‚¶ãƒ¼å
-  $PWD = "" # ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰
-
+# 0. ŠÂ‹«İ’è
+# ƒf[ƒ^ƒ\[ƒX–¼
+  $DSN = ""
 #
-# 1. ã“ã®ps1ãƒ•ã‚¡ã‚¤ãƒ«ã‚’PowerShellã§å®Ÿè¡Œ
+# ƒ†[ƒU[–¼
+  $UID = ""
 #
-# 2. [ãƒ‡ãƒ¼ã‚¿ã‚½ãƒ¼ã‚¹å]: ãŒå‡ºåŠ›ã•ã‚Œã‚‹ã®ã§ã‚³ãƒãƒ³ãƒ‰ã‚’å…¥åŠ›
+# ƒpƒXƒ[ƒh
+  $PWD = ""
+#
+# 1. ‚±‚Ìps1ƒtƒ@ƒCƒ‹‚ğPowerShell‚ÅÀs
+#
+# 2. [ƒf[ƒ^ƒ\[ƒX–¼]: ‚ªo—Í‚³‚ê‚é‚Ì‚ÅƒRƒ}ƒ“ƒh‚ğ“ü—Í
 $help = "
-      select ...        : SELECTæ–‡ã‚’å®Ÿè¡Œ
-      update ...        : UPDATEæ–‡ã‚’å®Ÿè¡Œ
-      insert ...        : INSERTæ–‡ã‚’å®Ÿè¡Œ
-      delete ...        : DELETEæ–‡ã‚’å®Ÿè¡Œ
-      clear ã¾ãŸã¯ cls  : ç”»é¢ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
-      csv               : ç›´å‰ã®çµæœã‚’CSVãƒ•ã‚¡ã‚¤ãƒ«(SJIS)ã«å‡ºåŠ›
-      clip              : ç›´å‰ã®çµæœã‚’ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ã‚³ãƒ”ãƒ¼(ã‚¿ãƒ–åŒºåˆ‡ã‚Š)
-      tables            : ãƒ†ãƒ¼ãƒ–ãƒ«ä¸€è¦§ã‚’å‡ºåŠ›
-      columns           : ã‚«ãƒ©ãƒ ä¸€è¦§ã‚’å‡ºåŠ›
-      database          : DBåã‚’å‡ºåŠ›
-      sql               : SQLãƒ•ã‚¡ã‚¤ãƒ«(SJIS)ã‚’é–‹ã„ã¦å®Ÿè¡Œ
-      mode              : ãƒ¢ãƒ¼ãƒ‰å¤‰æ›´(ã‚°ãƒªãƒƒãƒ‰ > ã‚³ãƒ³ã‚½ãƒ¼ãƒ«(ãƒ†ãƒ¼ãƒ–ãƒ«) > ã‚³ãƒ³ã‚½ãƒ¼ãƒ«(ãƒªã‚¹ãƒˆ))
-      exit ã¾ãŸã¯ quit  : çµ‚äº†
-      help              : ã‚³ãƒãƒ³ãƒ‰ä¸€è¦§
+      select ...        : SELECT•¶‚ğÀs
+      update ...        : UPDATE•¶‚ğÀs
+      insert ...        : INSERT•¶‚ğÀs
+      delete ...        : DELETE•¶‚ğÀs
+      clear ‚Ü‚½‚Í cls  : ‰æ–Ê‚ğƒNƒŠƒA‚·‚é
+      csv               : ’¼‘O‚ÌŒ‹‰Ê‚ğCSVƒtƒ@ƒCƒ‹(SJIS)‚Éo—Í
+      clip              : ’¼‘O‚ÌŒ‹‰Ê‚ğƒNƒŠƒbƒvƒ{[ƒh‚ÉƒRƒs[(ƒ^ƒu‹æØ‚è)
+      tables            : ƒe[ƒuƒ‹ˆê——‚ğo—Í
+      columns           : ƒJƒ‰ƒ€ˆê——‚ğo—Í
+      database          : DB–¼‚ğo—Í
+      sql               : SQLƒtƒ@ƒCƒ‹(SJIS)‚ğŠJ‚¢‚ÄÀs
+      mode              : ƒ‚[ƒh•ÏX(ƒOƒŠƒbƒh > ƒRƒ“ƒ\[ƒ‹(ƒe[ƒuƒ‹) > ƒRƒ“ƒ\[ƒ‹(ƒŠƒXƒg))
+      exit ‚Ü‚½‚Í quit  : I—¹
+      help              : ƒRƒ}ƒ“ƒhˆê——
 
-  â€» F7 ã§å…¥åŠ›å±¥æ­´ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã€F8 ã§å…¥åŠ›å±¥æ­´è£œå®Œã€F9 ã§å…¥åŠ›å±¥æ­´ç•ªå·å‘¼ã³å‡ºã—
-  â€» ESC ã§å…¥åŠ›ã‚¯ãƒªã‚¢
+  ¦ F7 ‚Å“ü—Í—š—ğƒ_ƒCƒAƒƒOAF8 ‚Å“ü—Í—š—ğ•âŠ®AF9 ‚Å“ü—Í—š—ğ”Ô†ŒÄ‚Ño‚µ
+  ¦ ESC ‚Å“ü—ÍƒNƒŠƒA
 "
 #-------------------------------------------------------------------
-# åˆæœŸå‡¦ç†
+# ‰Šúˆ—
 #-------------------------------------------------------------------
 
-# æ¥ç¶šã‚’é–‹ã
+# Ú‘±‚ğŠJ‚­
 try {
   if($DSN -eq ""){
-    "æ¥ç¶šã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã‚½ãƒ¼ã‚¹ã‚’ç•ªå·ã§å…¥åŠ›ã—ã¦ãã ã•ã„"
+    "Ú‘±‚·‚éƒf[ƒ^ƒ\[ƒX‚ğ”Ô†‚Å“ü—Í‚µ‚Ä‚­‚¾‚³‚¢"
     $DSNList = Get-OdbcDsn
     if ($DSNList.length -eq $null){
       "1:" + $DSNList.Name
@@ -53,7 +57,7 @@ try {
   if($PWD -eq ""){
     $Credential = Get-Credential -Credential $UID
     $UID = $Credential.UserName
-    # ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’å¹³æ–‡ã«æˆ»ã™
+    # ƒpƒXƒ[ƒh‚ğ•½•¶‚É–ß‚·
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Credential.Password)
     $PWD = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($BSTR)
     [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
@@ -63,9 +67,9 @@ try {
 }
 
 try {
-  # æ¥ç¶š
+  # Ú‘±
   $Con = New-Object System.Data.Odbc.OdbcConnection("DSN=" + $DSN + ";UID=" + $UID + ";PWD=" + $PWD)
-  # å®Ÿè¡Œ
+  # Às
   $Con.Open()
 } catch{
   if ($Error.Exception.InnerException[0]){
@@ -75,48 +79,48 @@ try {
   exit
 }
 
-# ãƒ•ã‚¡ã‚¤ãƒ«ä¿å­˜ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+# ƒtƒ@ƒCƒ‹•Û‘¶ƒ_ƒCƒAƒƒO
 Add-Type -AssemblyName System.Windows.Forms
 $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog 
-$SaveFileDialog.Filter = "CSVãƒ•ã‚¡ã‚¤ãƒ«(*.CSV)|*.csv|ã™ã¹ã¦ã®ãƒ•ã‚¡ã‚¤ãƒ«(*.*)|*.*"
+$SaveFileDialog.Filter = "CSVƒtƒ@ƒCƒ‹(*.CSV)|*.csv|‚·‚×‚Ä‚Ìƒtƒ@ƒCƒ‹(*.*)|*.*"
 $SaveFileDialog.InitialDirectory = ".\"
 
-# ãƒ•ã‚¡ã‚¤ãƒ«é–‹ããƒ€ã‚¤ã‚¢ãƒ­ã‚°
+# ƒtƒ@ƒCƒ‹ŠJ‚­ƒ_ƒCƒAƒƒO
 Add-Type -AssemblyName System.Windows.Forms
 $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog 
-$OpenFileDialog.Filter = "SQLãƒ•ã‚¡ã‚¤ãƒ«(*.SQL)|*.sql|ã™ã¹ã¦ã®ãƒ•ã‚¡ã‚¤ãƒ«(*.*)|*.*"
+$OpenFileDialog.Filter = "SQLƒtƒ@ƒCƒ‹(*.SQL)|*.sql|‚·‚×‚Ä‚Ìƒtƒ@ƒCƒ‹(*.*)|*.*"
 $OpenFileDialog.InitialDirectory = ".\"
 
-# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ï¼ˆSJISï¼‰
+# ƒGƒ“ƒR[ƒfƒBƒ“ƒOiSJISj
 $OutputEncoding = [console]::OutputEncoding
 
-# ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ãƒ¢ãƒ¼ãƒ‰
+# ƒRƒ“ƒ\[ƒ‹ƒ‚[ƒh
 $Console = $false
 
-# ãƒªã‚¹ãƒˆè¡¨ç¤ºãƒ¢ãƒ¼ãƒ‰
+# ƒŠƒXƒg•\¦ƒ‚[ƒh
 $List = $false
 
 #-------------------------------------------------------------------
-# ä¸»å‡¦ç†
+# åˆ—
 #-------------------------------------------------------------------
 
 while($true){
-  # ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆ
+  # ƒvƒƒ“ƒvƒg
   $q = Read-Host [$DSN] | % Trim
   $title = $q
   
-  # çµ‚äº†
+  # I—¹
   if(($q -eq "exit") -or ($q -eq "quit")){
     break
   }
   
-  # ã‚¯ãƒªã‚¢ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
+  # ƒNƒŠƒAƒXƒNƒŠ[ƒ“
   if(($q -eq "clear") -or ($q -eq "cls")){
     Clear-Host
     continue
   }
 
-  # CSVå‡ºåŠ›
+  # CSVo—Í
   if($q -eq "csv"){
     if ($csv -ne $null){
       $SaveFileDialog.Filename = "result.csv"
@@ -127,7 +131,7 @@ while($true){
     continue
   }
 
-  # ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ã‚³ãƒ”ãƒ¼
+  # ƒNƒŠƒbƒvƒ{[ƒh‚ÉƒRƒs[
   if($q -eq "clip"){
     if ($csv -ne $null){
       $csv | ConvertTo-Csv -Delimiter "`t" -NoTypeInformation | Set-Clipboard
@@ -135,9 +139,9 @@ while($true){
     continue
   }
 
-  # ãƒ†ãƒ¼ãƒ–ãƒ«ä¸€è¦§
+  # ƒe[ƒuƒ‹ˆê——
   if($q -eq "tables"){
-    $Schema = Read-Host "ã‚¹ã‚­ãƒ¼ãƒå" | % Trim
+    $Schema = Read-Host "ƒXƒL[ƒ}–¼" | % Trim
     try {
       $csv = $Con.GetSchema("Tables", ($Con.Database, $Schema)) | Select-Object TABLE_SCHEM, TABLE_NAME
       if ($Console){
@@ -154,10 +158,10 @@ while($true){
     continue
   }
 
-  # ã‚«ãƒ©ãƒ ä¸€è¦§
+  # ƒJƒ‰ƒ€ˆê——
   if($q -eq "columns"){
-    $Schema = Read-Host "ã‚¹ã‚­ãƒ¼ãƒå" | % Trim
-    $Table = Read-Host "ãƒ†ãƒ¼ãƒ–ãƒ«å" | % Trim
+    $Schema = Read-Host "ƒXƒL[ƒ}–¼" | % Trim
+    $Table = Read-Host "ƒe[ƒuƒ‹–¼" | % Trim
     try {
       $csv = ($Con.GetSchema("Columns", ($Con.Database, $Schema, $Table)) | Select-Object TABLE_SCHEM, TABLE_NAME, COLUMN_NAME, TYPE_NAME)
       if (!$Console){
@@ -174,13 +178,13 @@ while($true){
     continue
   }
 
-  # DBå
+  # DB–¼
   if($q -eq "database"){
     $Con.Database
     continue
   }
 
-  # SQLãƒ•ã‚¡ã‚¤ãƒ«
+  # SQLƒtƒ@ƒCƒ‹
   if($q -eq "sql"){
     $OpenFileDialog.Filename = ""
     if($OpenFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
@@ -191,41 +195,41 @@ while($true){
     }
   }
 
-  # å…¥åŠ›ãªã—
+  # “ü—Í‚È‚µ
   if($q -eq ""){
      continue
   }
   
-  # ãƒ¢ãƒ¼ãƒ‰ãƒã‚§ãƒ³ã‚¸
+  # ƒ‚[ƒhƒ`ƒFƒ“ƒW
   if ($q -eq "mode"){
      if (!$Console -and !$List) {
        $Console = $true
        $List = $false
-       "ã‚³ãƒ³ã‚½ãƒ¼ãƒ«(ãƒ†ãƒ¼ãƒ–ãƒ«)" | Out-Host
+       "ƒRƒ“ƒ\[ƒ‹(ƒe[ƒuƒ‹)" | Out-Host
      } elseif ($Console -and !$List) {
        $Console = $true
        $List = $true
-       "ã‚³ãƒ³ã‚½ãƒ¼ãƒ«(ãƒªã‚¹ãƒˆ)" | Out-Host
+       "ƒRƒ“ƒ\[ƒ‹(ƒŠƒXƒg)" | Out-Host
      } elseif ($Console -and $List) {
        $Console = $false
        $List = $false
-       "ã‚°ãƒªãƒƒãƒ‰" | Out-Host
+       "ƒOƒŠƒbƒh" | Out-Host
      }
      continue
   }
 
-  # ãƒ˜ãƒ«ãƒ—
+  # ƒwƒ‹ƒv
   if($q -eq "help"){
      $help
      continue
   }
 
-  # SQLã‚³ãƒãƒ³ãƒ‰
+  # SQLƒRƒ}ƒ“ƒh
   $Cmd = New-Object System.Data.Odbc.OdbcCommand
   $Cmd.CommandText = $q
   $Cmd.Connection = $Con
 
-  # SQLå®Ÿè¡Œ
+  # SQLÀs
   if($q -match "select*"){
     $da  = New-Object System.Data.Odbc.OdbcDataAdapter
     $da.SelectCommand = $Cmd
@@ -236,7 +240,7 @@ while($true){
       $Error.Exception.InnerException[0].Message
       continue
     }
-    # ãƒ‡ãƒ¼ã‚¿è¡¨ç¤º
+    # ƒf[ƒ^•\¦
     try {
       $csv = $DataSet.Tables[0]
       if (!$Console){
@@ -255,7 +259,7 @@ while($true){
     }
 } else{
     try {
-      # å®Ÿè¡Œ
+      # Às
       $Cmd.ExecuteNonQuery()
     } catch{
       $Error.Exception.InnerException[0].Message
@@ -265,8 +269,8 @@ while($true){
 }
 
 #-------------------------------------------------------------------
-# çµ‚äº†å‡¦ç†
+# I—¹ˆ—
 #-------------------------------------------------------------------
 
-# æ¥ç¶šã‚’é–‰ã˜ã‚‹
+# Ú‘±‚ğ•Â‚¶‚é
 $Con.Close()
