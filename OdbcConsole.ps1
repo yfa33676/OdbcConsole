@@ -41,16 +41,22 @@ $help = "
 # 接続を開く
 try {
   if($DSN -eq ""){
-    "接続するデータソースを番号で入力してください"
     $DSNList = Get-OdbcDsn
-    if ($DSNList.length -eq $null){
-      "1:" + $DSNList.Name
-      $DSNIndex = Read-Host
-      $DSN = $DSNList.Name
+    if ($DSNList -eq $null){
+    "接続できるデータソースがありません"
+    pause
+    exit
     } else {
-      (1 .. $DSNList.length) | % {[string]$_ + ":" + ($DSNList | % Name)[$_ - 1]}
-      $DSNIndex = Read-Host
-      $DSN = (Get-OdbcDsn | % Name)[$DSNIndex - 1]
+    "接続するデータソースを番号で入力してください"
+      if ($DSNList.length -eq $null){
+        "1:" + $DSNList.Name
+        $DSNIndex = Read-Host
+        $DSN = $DSNList.Name
+       } else {
+        (1 .. $DSNList.length) | % {[string]$_ + ":" + ($DSNList | % Name)[$_ - 1]}
+        $DSNIndex = Read-Host
+        $DSN = (Get-OdbcDsn | % Name)[$DSNIndex - 1]
+      }
     }
   }
 
