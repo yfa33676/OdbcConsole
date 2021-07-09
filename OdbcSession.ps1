@@ -277,7 +277,7 @@ while($true){
   # SQLファイル実行
   if($q -eq "sql"){
     if($OpenFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
-      $sql = ((Get-Content -Path $OpenFileDialog.Filename) -Join " " -Split ";") | % Trim | ? Length -ne 0
+      $sql = ((Get-Content -Path $OpenFileDialog.Filename) -Replace "--.*$","" -Join " " -Split ";") | % Trim | ? Length -ne 0
       $OpenFileDialog.Filename = $OpenFileDialog.Filename | Split-Path -Leaf
       foreach($CommandText in $sql){
         $csv = Execute-SQL -CommandText $CommandText -Title $OpenFileDialog.Filename
