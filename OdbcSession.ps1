@@ -21,8 +21,9 @@ $help = "
       clear または cls       : 画面をクリアする
       csv                    : 直前の結果をCSVファイル(SJIS)に出力
       clip                   : 直前の結果をクリップボードにコピー(タブ区切り)
-      tables                 : テーブル一覧を出力
-      columns                : カラム一覧を出力
+      schemas または sch     : スキーマ一覧を出力
+      tables または tbl      : テーブル一覧を出力
+      columns または col     : カラム一覧を出力
       database               : DB名を出力
       sql                    : SQLファイル(SJIS)を開いて実行
       mode                   : モード変更(グリッド > コンソール(テーブル) > コンソール(リスト))
@@ -138,6 +139,7 @@ function Execute-SQL{
     # データ表示
     try {
       $csv = $DataSet.Tables[0]
+      
       if (!$Console){
         $csv | Out-GridView -Title $Title
       } else{
@@ -208,19 +210,38 @@ while($true){
     continue
   }
 
+  # スキーマ一覧
+  if(($q -eq "schemas") -or ($q -eq "sch")){
+    try {
+      $csv = $Con.GetSchema("Tables", $Con.Database) | Select-Object TABLE_SCHEM -Uniq
+      if (!$Console){
+        $csv | Out-GridView -Title ($title)
+      } else{
+        if (!$List){
+          $csv | Format-Table | Out-Host -Paging
+        } else {
+          $csv | Format-List | Out-Host -Paging
+        }
+      }
+    } catch {
+    }
+    continue
+  }
+  
+
   # テーブル一覧
-  if($q -eq "tables"){
+  if(($q -eq "tables") -or ($q -eq "tbl")){
     $Schema = Read-Host "スキーマ名" | % Trim
     try {
       $csv = $Con.GetSchema("Tables", ($Con.Database, $Schema)) | Select-Object TABLE_SCHEM, TABLE_NAME
-      if ($Console){
-        if ($List){
-          $csv | Format-List | Out-Host -Paging
-        } else {
-          $csv | Format-Table | Out-Host -Paging
-        }
+      if (!$Console){
+        $csv | Out-GridView -Title ($title + " " + $Schema)
       } else{
-        $csv | Out-GridView -Title $title
+        if (!$List){
+          $csv | Format-Table | Out-Host -Paging
+        } else {
+          $csv | Format-List | Out-Host -Paging
+        }
       }
     } catch {
     }
@@ -228,13 +249,13 @@ while($true){
   }
 
   # カラム一覧
-  if($q -eq "columns"){
+  if(($q -eq "columns") -or ($q -eq "col")){
     $Schema = Read-Host "スキーマ名" | % Trim
     $Table = Read-Host "テーブル名" | % Trim
     try {
       $csv = ($Con.GetSchema("Columns", ($Con.Database, $Schema, $Table)) | Select-Object TABLE_SCHEM, TABLE_NAME, COLUMN_NAME, TYPE_NAME)
       if (!$Console){
-        $csv | Out-GridView -Title $title
+        $csv | Out-GridView -Title ($title + " " + $Schema + " " + $Table)
       } else{
         if (!$List){
           $csv | Format-Table | Out-Host -Paging
