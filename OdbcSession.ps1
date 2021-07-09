@@ -14,20 +14,23 @@
 #
 # 2. [データソース名]: が出力されるのでコマンドを入力
 $help = "
-      select ...        : SELECT文を実行
-      update ...        : UPDATE文を実行
-      insert ...        : INSERT文を実行
-      delete ...        : DELETE文を実行
-      clear または cls  : 画面をクリアする
-      csv               : 直前の結果をCSVファイル(SJIS)に出力
-      clip              : 直前の結果をクリップボードにコピー(タブ区切り)
-      tables            : テーブル一覧を出力
-      columns           : カラム一覧を出力
-      database          : DB名を出力
-      sql               : SQLファイル(SJIS)を開いて実行
-      mode              : モード変更(グリッド > コンソール(テーブル) > コンソール(リスト))
-      exit または quit  : 終了
-      help              : コマンド一覧
+      select ...             : SELECT文を実行
+      update ...             : UPDATE文を実行
+      insert ...             : INSERT文を実行
+      delete ...             : DELETE文を実行
+      clear または cls       : 画面をクリアする
+      csv                    : 直前の結果をCSVファイル(SJIS)に出力
+      clip                   : 直前の結果をクリップボードにコピー(タブ区切り)
+      tables                 : テーブル一覧を出力
+      columns                : カラム一覧を出力
+      database               : DB名を出力
+      sql                    : SQLファイル(SJIS)を開いて実行
+      mode                   : モード変更(グリッド > コンソール(テーブル) > コンソール(リスト))
+      transaction または trn : トランザクションの開始 
+      commit                 : コミット
+      rollback または rol    : ロールバック
+      exit または quit       : 終了
+      help                   : コマンド一覧
 
   ※ F7 で入力履歴ダイアログ、F8 で入力履歴補完、F9 で入力履歴番号呼び出し
   ※ ESC で入力クリア
@@ -108,7 +111,9 @@ $Console = $false
 # リスト表示モード
 $List = $false
 
-# 実行結果
+# SQLコマンド
+$Cmd = New-Object System.Data.Odbc.OdbcCommand
+$Cmd.Connection = $Con
 
 # SQL実行関数
 function Execute-SQL{
@@ -116,10 +121,8 @@ function Execute-SQL{
     [string]$CommandText,
     [string]$Title
   )
-  # SQLコマンド
-  $Cmd = New-Object System.Data.Odbc.OdbcCommand
+
   $Cmd.CommandText = $CommandText
-  $Cmd.Connection = $Con
 
   # SQL実行
   if($Cmd.CommandText -match "select*"){
@@ -168,7 +171,11 @@ function Execute-SQL{
 
 while($true){
   # プロンプト
-  $q = Read-Host [$DSN] | % Trim
+  if($transaction.IsolationLevel -eq $null){
+    $q = Read-Host [$DSN] | % Trim
+  } else {
+    $q = Read-Host [$DSN][T] | % Trim
+  }
   $title = $q
   
   # 終了
@@ -287,6 +294,26 @@ while($true){
      $help
      continue
   }
+  
+  # トランザクション
+  if($transaction.IsolationLevel -eq $null){
+    # トランザクション開始
+    if (($q -eq "transaction") -or ($q -eq "trn")){
+      $transaction = $Con.BeginTransaction()
+      $Cmd.Transaction  = $transaction
+    }
+
+  } else {
+    # コミット
+    if ($q -eq "commit"){
+      $transaction.Commit()
+    }
+
+    # ロールバック
+    if (($q -eq "rollback") -or ($q -eq "rol")){
+      $transaction.RollBack()
+    }
+  }
 
   # SQL実行
   if (($q -match "select*") -or ($q -match "update*") -or ($q -match "insert*") -or ($q -match "delete*")){
@@ -298,5 +325,11 @@ while($true){
 # 終了処理
 #-------------------------------------------------------------------
 
+if ($transaction -ne $null){
+  $transaction.Dispose()
+}
+$Cmd.Dispose()
+
 # 接続を閉じる
 $Con.Close()
+$Con.Dispose()
