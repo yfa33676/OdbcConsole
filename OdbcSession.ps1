@@ -131,7 +131,7 @@ function Execute-SQL{
     $da.SelectCommand = $Cmd
     $DataSet = New-Object System.Data.DataSet
     try {
-      $nRecs = $da.Fill($DataSet)
+      $results = $da.Fill($DataSet)
     } catch{
       $Error.Exception.InnerException[0].Message
       continue
@@ -139,7 +139,6 @@ function Execute-SQL{
     # データ表示
     try {
       $csv = $DataSet.Tables[0]
-      
       if (!$Console){
         $csv | Out-GridView -Title $Title
       } else{
@@ -150,10 +149,8 @@ function Execute-SQL{
         }
       }
     } catch {
-    } finally{
-      $nRecs | Out-Host
-      $nRecs | Out-Null
     }
+    $results | Out-Host
   } else{
     try {
       # 実行
@@ -206,24 +203,6 @@ while($true){
   if($q -eq "clip"){
     if ($csv -ne $null){
       $csv | ConvertTo-Csv -Delimiter "`t" -NoTypeInformation | Set-Clipboard
-    }
-    continue
-  }
-
-  # スキーマ一覧
-  if(($q -eq "schemas") -or ($q -eq "sch")){
-    try {
-      $csv = $Con.GetSchema("Tables", $Con.Database) | Select-Object TABLE_SCHEM -Uniq
-      if (!$Console){
-        $csv | Out-GridView -Title ($title)
-      } else{
-        if (!$List){
-          $csv | Format-Table | Out-Host -Paging
-        } else {
-          $csv | Format-List | Out-Host -Paging
-        }
-      }
-    } catch {
     }
     continue
   }
@@ -282,9 +261,8 @@ while($true){
       foreach($CommandText in $sql){
         $csv = Execute-SQL -CommandText $CommandText -Title $OpenFileDialog.Filename
       }
-    } else{
-      continue
     }
+    continue
   }
 
   # 入力なし
@@ -322,24 +300,31 @@ while($true){
     if (($q -eq "transaction") -or ($q -eq "trn")){
       $transaction = $Con.BeginTransaction()
       $Cmd.Transaction  = $transaction
+      continue
     }
-
   } else {
     # コミット
     if ($q -eq "commit"){
       $transaction.Commit()
+      continue
     }
-
     # ロールバック
     if (($q -eq "rollback") -or ($q -eq "rol")){
       $transaction.RollBack()
+      continue
     }
   }
 
   # SQL実行
   if (($q -match "select*") -or ($q -match "update*") -or ($q -match "insert*") -or ($q -match "delete*")){
     $csv = Execute-SQL -CommandText $q -Title $q
+    continue
   }
+
+  # 認識していないコマンド
+  "$q はコマンドとして認識されません。" | Out-Host
+  continue
+
 }
 
 #-------------------------------------------------------------------
