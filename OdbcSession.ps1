@@ -23,6 +23,7 @@ $help = "
       clip                   : 直前の結果をクリップボードにコピー(タブ区切り)
       tables または tbl      : テーブル一覧を出力
       columns または col     : カラム一覧を出力
+      views                  : ビュー一覧を出力
       database               : DB名を出力
       sql                    : SQLファイル(SJIS)を開いて実行
       mode                   : モード変更(グリッド > コンソール(テーブル) > コンソール(リスト))
@@ -234,6 +235,25 @@ while($true){
       $csv = ($Con.GetSchema("Columns", ($Con.Database, $Schema, $Table)) | Select-Object TABLE_SCHEM, TABLE_NAME, COLUMN_NAME, TYPE_NAME, COLUMN_SIZE)
       if (!$Console){
         $csv | Out-GridView -Title ($title + " " + $Schema + " " + $Table)
+      } else{
+        if (!$List){
+          $csv | Format-Table | Out-Host -Paging
+        } else {
+          $csv | Format-List | Out-Host -Paging
+        }
+      }
+    } catch {
+    }
+    continue
+  }
+
+  # ビュー一覧
+  if($q -eq "views"){
+    $Schema = Read-Host "スキーマ名" | % Trim
+    try {
+      $csv = ($Con.GetSchema("Views", ($Con.Database, $Schema)) | Select-Object TABLE_SCHEM, TABLE_NAME)
+      if (!$Console){
+        $csv | Out-GridView -Title ($title + " " + $Schema)
       } else{
         if (!$List){
           $csv | Format-Table | Out-Host -Paging
