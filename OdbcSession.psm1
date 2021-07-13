@@ -216,7 +216,7 @@ function Enter-OdbcSession{
         $Schema = Read-Host "スキーマ名" | % Trim
         $Table = Read-Host "テーブル名" | % Trim
         try {
-          $csv = ($Con.GetSchema("Columns", ($Con.Database, $Schema, $Table)) | Select-Object TABLE_SCHEM, TABLE_NAME, COLUMN_NAME, TYPE_NAME)
+          $csv = ($Con.GetSchema("Columns", ($Con.Database, $Schema, $Table)) | Select-Object TABLE_SCHEM, TABLE_NAME, COLUMN_NAME, TYPE_NAME, COLUMN_SIZE)
           if (!$Console){
             $csv | Out-GridView -Title ($title + " " + $Schema + " " + $Table)
           } else{
