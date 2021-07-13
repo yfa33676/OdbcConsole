@@ -113,7 +113,10 @@ function Enter-OdbcSession{
       }
     })
     $TextInputDialog.Controls.Add($TextBox)
-    $TextInputDialog.add_load({$TextBox.Select()})
+    $TextInputDialog.add_load({
+      $TextInputDialog.Activate()
+      $TextBox.Select()
+    })
 
     $OKButton = New-Object System.Windows.Forms.Button
     $OKButton.Text = "OK"

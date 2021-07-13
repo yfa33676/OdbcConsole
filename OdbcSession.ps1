@@ -134,7 +134,10 @@ $OKButton.Dock = "Bottom"
 $TextInputDialog.Controls.Add($OKButton)
 $TextInputDialog.AcceptButton = $OKButton
 
-$TextInputDialog.add_load({$TextBox.Select()})
+$TextInputDialog.add_load({
+  $TextInputDialog.Activate()
+  $TextBox.Select()
+})
 
 # エンコーディング（SJIS）
 $OutputEncoding = [console]::OutputEncoding
