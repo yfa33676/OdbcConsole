@@ -15,7 +15,6 @@ function Enter-OdbcSession{
       clear または cls       : 画面をクリアする
       csv                    : 直前の結果をCSVファイル(SJIS)に出力
       clip                   : 直前の結果をクリップボードにコピー(タブ区切り)
-      schemas または sch     : スキーマ一覧を出力
       tables または tbl      : テーブル一覧を出力
       columns または col     : カラム一覧を出力
       database               : DB名を出力
@@ -110,7 +109,6 @@ function Enter-OdbcSession{
         [string]$CommandText,
         [string]$Title
       )
-      "TEST" | Out-Host
       $Cmd.CommandText = $CommandText
 
       # SQL実行
