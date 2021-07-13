@@ -110,13 +110,6 @@ $OpenFileDialog.InitialDirectory = ".\"
 $TextInputDialog = New-Object System.Windows.Forms.Form
 $TextInputDialog.Size = New-Object System.Drawing.Size(800,600) 
 
-$OKButton = New-Object System.Windows.Forms.Button
-$OKButton.Text = "OK"
-$OKButton.DialogResult = "OK"
-$OKButton.Dock = "Bottom"
-$TextInputDialog.Controls.Add($OKButton)
-$TextInputDialog.AcceptButton = $OKButton
-
 $TextBox = New-Object System.Windows.Forms.Textbox
 $TextBox.Multiline = $true
 $TextBox.AcceptsReturn = $true
@@ -133,6 +126,14 @@ $TextBox.Add_KeyDown({
 })
 
 $TextInputDialog.Controls.Add($TextBox)
+
+$OKButton = New-Object System.Windows.Forms.Button
+$OKButton.Text = "OK"
+$OKButton.DialogResult = "OK"
+$OKButton.Dock = "Bottom"
+$TextInputDialog.Controls.Add($OKButton)
+$TextInputDialog.AcceptButton = $OKButton
+
 $TextInputDialog.add_load({$TextBox.Select()})
 
 # エンコーディング（SJIS）

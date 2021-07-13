@@ -98,13 +98,6 @@ function Enter-OdbcSession{
     $TextInputDialog = New-Object System.Windows.Forms.Form
     $TextInputDialog.Size = New-Object System.Drawing.Size(800,600) 
 
-    $OKButton = New-Object System.Windows.Forms.Button
-    $OKButton.Text = "OK"
-    $OKButton.DialogResult = "OK"
-    $OKButton.Dock = "Bottom"
-    $TextInputDialog.Controls.Add($OKButton)
-    $TextInputDialog.AcceptButton = $OKButton
-
     $TextBox = New-Object System.Windows.Forms.Textbox
     $TextBox.Multiline = $true
     $TextBox.AcceptsReturn = $true
@@ -119,9 +112,15 @@ function Enter-OdbcSession{
         $TextBox.SelectAll()
       }
     })
-
     $TextInputDialog.Controls.Add($TextBox)
     $TextInputDialog.add_load({$TextBox.Select()})
+
+    $OKButton = New-Object System.Windows.Forms.Button
+    $OKButton.Text = "OK"
+    $OKButton.DialogResult = "OK"
+    $OKButton.Dock = "Bottom"
+    $TextInputDialog.Controls.Add($OKButton)
+    $TextInputDialog.AcceptButton = $OKButton
 
     # エンコーディング（SJIS）
     $OutputEncoding = [console]::OutputEncoding
