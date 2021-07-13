@@ -26,6 +26,7 @@ $help = "
       views                  : ビュー一覧を出力
       database               : DB名を出力
       sql                    : SQLファイル(SJIS)を開いて実行
+      text                   : 複数行入力ダイアログ
       mode                   : モード変更(グリッド > コンソール(テーブル) > コンソール(リスト))
       transaction または trn : トランザクションの開始 
       commit                 : コミット
@@ -91,17 +92,48 @@ try {
   exit
 }
 
-# ファイル保存ダイアログ
+# ダイアログ
 Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+# ファイルを保存するダイアログ
 $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog 
 $SaveFileDialog.Filter = "CSVファイル(*.CSV)|*.csv|すべてのファイル(*.*)|*.*"
 $SaveFileDialog.InitialDirectory = ".\"
 
-# ファイル開くダイアログ
-Add-Type -AssemblyName System.Windows.Forms
+# ファイルを開くダイアログ
 $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog 
 $OpenFileDialog.Filter = "SQLファイル(*.SQL)|*.sql|すべてのファイル(*.*)|*.*"
 $OpenFileDialog.InitialDirectory = ".\"
+
+# テキスト入力ダイアログ
+$TextInputDialog = New-Object System.Windows.Forms.Form
+$TextInputDialog.Size = New-Object System.Drawing.Size(800,600) 
+
+$OKButton = New-Object System.Windows.Forms.Button
+$OKButton.Text = "OK"
+$OKButton.DialogResult = "OK"
+$OKButton.Dock = "Bottom"
+$TextInputDialog.Controls.Add($OKButton)
+$TextInputDialog.AcceptButton = $OKButton
+
+$TextBox = New-Object System.Windows.Forms.Textbox
+$TextBox.Multiline = $true
+$TextBox.AcceptsReturn = $true
+$TextBox.WordWrap = $true
+$TextBox.ScrollBars = [System.Windows.Forms.ScrollBars]::Vertical
+$TextBox.Multiline = $true
+$TextBox.MaxLength = 0
+$TextBox.Font = New-Object Drawing.Font("ＭＳ ゴシック",10)
+$TextBox.Dock = "Fill"
+$TextBox.Add_KeyDown({
+  if ($_.Control -and $_.KeyCode -eq "A"){
+    $TextBox.SelectAll()
+  }
+})
+
+$TextInputDialog.Controls.Add($TextBox)
+$TextInputDialog.add_load({$TextBox.Select()})
 
 # エンコーディング（SJIS）
 $OutputEncoding = [console]::OutputEncoding
@@ -269,6 +301,17 @@ while($true){
   # DB名
   if($q -eq "database"){
     $Con.Database
+    continue
+  }
+
+  # 複数行テキスト入力
+  if($q -eq "text"){
+    if($TextInputDialog.ShowDialog() -eq "OK"){
+      $sql = ($TextBox.Lines -Replace "--.*$","" -Join " " -Split ";") | % Trim | ? Length -ne 0
+      foreach($CommandText in $sql){
+        $csv = Execute-SQL -CommandText $CommandText -Title ($CommandText.SubString(0,30) + "...")
+      }
+    }
     continue
   }
 
