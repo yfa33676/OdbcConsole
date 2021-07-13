@@ -313,7 +313,7 @@ while($true){
     if($TextInputDialog.ShowDialog() -eq "OK"){
       $sql = ($TextBox.Lines -Replace "--.*$","" -Join " " -Split ";") | % Trim | ? Length -ne 0
       foreach($CommandText in $sql){
-        $csv = Execute-SQL -CommandText $CommandText -Title ($CommandText.SubString(0,30) + "...")
+        $csv = Execute-SQL -CommandText $CommandText -Title $q
       }
     }
     continue
