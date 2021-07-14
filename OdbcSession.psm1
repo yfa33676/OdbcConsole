@@ -14,6 +14,7 @@ function Enter-OdbcSession{
       delete ...             : DELETE文を実行
       clear または cls       : 画面をクリアする
       csv                    : 直前の結果をCSVファイル(SJIS)に出力
+      insert                 : 直前の結果をINSERT文(SJIS)に出力
       clip                   : 直前の結果をクリップボードにコピー(タブ区切り)
       tables または tbl      : テーブル一覧を出力
       columns または col     : カラム一覧を出力
@@ -211,8 +212,33 @@ function Enter-OdbcSession{
       if($q -eq "csv"){
         if ($csv -ne $null){
           $SaveFileDialog.Filename = "result.csv"
+          $SaveFileDialog.Filter = "CSVファイル(*.CSV)|*.csv|すべてのファイル(*.*)|*.*"
           if ($SaveFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
             $csv | Export-Csv -Encoding Default -NoTypeInformation -Path $SaveFileDialog.Filename
+          }
+        }
+        continue
+      }
+
+      # INSERT文出力
+      if($q -eq "insert"){
+        if ($csv -ne $null){
+          $InsertInto = Read-Host "挿入先のテーブル名"
+          $SaveFileDialog.Filename = "result.sql"
+          $SaveFileDialog.Filter = "SQLファイル(*.SQL)|*.sql|すべてのファイル(*.*)|*.*"
+          if ($SaveFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
+            $i=0
+            $insert = ""
+            while(($json = ($csv | Select-Object -First 1 -Skip $i | % ItemArray | ConvertTo-Json)) -ne $null){
+              if($i -ne 0){
+                $insert += "`r`n"
+              }
+              $insert += "insert into $InsertInto values"
+              $insert += $json -replace "`r`n","" -replace ", +","," -replace "[　| ]+`"","`"" -replace "`"","'" -replace "\[ *","(" -replace "\]",")"
+              $insert += ";"
+              $i++
+            }
+            $insert | Out-File -Encoding Default -FilePath $SaveFileDialog.Filename 
           }
         }
         continue
