@@ -61,7 +61,8 @@ $OutputEncoding = [console]::OutputEncoding
 # クエリ実行
 function Execute-Query{
   param(
-    [string]$CommandText
+    [string]$CommandText,
+    [string]$Title
   )
   
   # ODBCデータアダプタ
@@ -78,14 +79,14 @@ function Execute-Query{
   $Result = $DataSet.Tables[0]
   try{
     switch ($Mode){
-      グリッド {$Result | Out-GridView -Title $InputCommand}
+      グリッド {$Result | Out-GridView -Title $Title}
       テーブル {$Result | Format-Table | Out-Host -Paging}
       リスト   {$Result | Format-List  | Out-Host -Paging}
     }
   } catch {
   }
   
-  $Records | Out-Null
+  $Records | Out-Host
   return $Result
 }
 
@@ -141,7 +142,40 @@ while($true){
   if($InputCommand -eq "tables" -or $InputCommand -eq "tbl"){
     $Schema = Read-Host "スキーマ名" | % Trim
     $Result = $Con.GetSchema("Tables", ($Con.Database, $Schema)) | Select-Object TABLE_SCHEM, TABLE_NAME
-    $Title = $InputCommand
+    $Title = "$InputCommand $Schema"
+    try{
+      switch ($Mode){
+        グリッド {$Result | Out-GridView -Title $Title}
+        テーブル {$Result | Format-Table | Out-Host -Paging}
+        リスト   {$Result | Format-List  | Out-Host -Paging}
+      }
+    } catch {
+    }
+    continue
+  }
+
+  # テーブル一覧
+  if($InputCommand -eq "views"){
+    $Schema = Read-Host "スキーマ名" | % Trim
+    $Result = $Con.GetSchema("Views", ($Con.Database, $Schema)) | Select-Object TABLE_SCHEM, TABLE_NAME
+    $Title = "$InputCommand $Schema"
+    try{
+      switch ($Mode){
+        グリッド {$Result | Out-GridView -Title $Title}
+        テーブル {$Result | Format-Table | Out-Host -Paging}
+        リスト   {$Result | Format-List  | Out-Host -Paging}
+      }
+    } catch {
+    }
+    continue
+  }
+
+  # カラム一覧
+  if($InputCommand -eq "columns" -or $InputCommand -eq "col"){
+    $Schema = Read-Host "スキーマ名" | % Trim
+    $Table = Read-Host "テーブル名" | % Trim
+    $Result = $Con.GetSchema("Columns", ($Con.Database, $Schema, $Table)) | Select-Object TABLE_SCHEM, TABLE_NAME, COLUMN_NAME, TYPE_NAME, COLUMN_SIZE
+    $Title = "$InputCommand $Schema $Table"
     try{
       switch ($Mode){
         グリッド {$Result | Out-GridView -Title $Title}
@@ -172,6 +206,26 @@ while($true){
       foreach($CommandText in $text){
         $Result = Execute-Query -CommandText $CommandText -Title $InputCommand
       }
+    }
+    continue
+  }
+  
+  # SQLファイル実行
+  if($InputCommand -eq "sql"){
+    if($OpenFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
+      $sql = ((Get-Content -Path $OpenFileDialog.Filename) -Replace "--.*$","" -Join " " -Split ";") | % Trim | ? Length -ne 0
+      $OpenFileDialog.Filename = $OpenFileDialog.Filename | Split-Path -Leaf
+      foreach($CommandText in $sql){
+        $Result = Execute-Query -CommandText $CommandText -Title $OpenFileDialog.Filename
+      }
+    }
+    continue
+  }
+
+  # クリップボードにコピー
+  if($InputCommand -eq "clip"){
+    if ($Result -ne $null){
+      $Result | ConvertTo-Csv -Delimiter "`t" -NoTypeInformation | Set-Clipboard
     }
     continue
   }
