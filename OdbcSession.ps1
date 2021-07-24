@@ -9,6 +9,7 @@
       [string]$UID = "", # ユーザー名
       [string]$PWD = ""  # パスワード
   )
+Clear-Host
 #
 # 1. このps1ファイルをPowerShellで実行
 #
